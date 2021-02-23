@@ -1,6 +1,11 @@
 # AlpineCache
-一个基础的分布式缓存
-
+Go语言编写的分布式缓存。支持缓存的基本功能，包括查询，本地获取，缓存淘汰，并发查询等。  
+通过Go语言test机制，进行单元测试，模拟使用情况。
+## 关键词
+* 单机缓存和基于 HTTP 的分布式缓存
+* 使用最近最少访问(LRU) 缓存策略
+* 使用一致性哈希选择节点
+* 利用锁控制单次查询，防止缓存击穿
 ## 基本流程
 
 ## 部分流程讲解
@@ -23,3 +28,9 @@ apiserver调用group.Get去获取缓存
   * 结果2，key本应落在自己节点，说明缓存里确实没有，调用fromlocal从本地获取缓存数据添加进去
     
 注1：Apiserver和httpgetter的get触发group.get的区别。apiserver对外界开放，单独写出来，这样用户请求的URL可以很方便的修改。httpgetter的get
+
+## 部分运行结果
+通过HTTP发送请求
+![http](readmeResources/http_test.PNG)
+
+待续...
