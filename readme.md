@@ -27,14 +27,14 @@ Go语言编写的分布式缓存。支持缓存的基本功能，包括查询，
 
 * onlySendOnce：当一个key正在被查询时，查询相同key的请求全部被挂起，直接等待结果返回。
 
-## 部分运行结果
-若存在缓存则返回，不存在则从本地获取。第二次直接返回find in cache。  
+## 部分运行测试结果
+测试若存在缓存则返回，不存在则从本地获取。下图第二次请求直接返回find in cache。  
 ![http](readmeResources/basic_test.PNG)
 
 测试一致性hash加入节点。  
 ![hashring](readmeResources/hashring_test.PNG)
 
-分布式节点，使用Http发送请求。  
+run.sh模拟分布式节点，使用Http发送请求。  
 并测试onlySendOnce。数个相同key的请求同时发出，若不在cache中，只会同时本地获取一次，其它请求直接等待结果。  
 ```
 cache is running at http://localhost:8000
