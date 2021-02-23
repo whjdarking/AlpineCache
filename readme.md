@@ -23,19 +23,19 @@ Go语言编写的分布式缓存。支持缓存的基本功能，包括查询，
       * 通过对应的httpgetter里的get方法(注)，对目标节点触发group.Get。从头循环。（这次即使还是没找到，load函数也会发现本应落在自己这个节点，于是触发本地获取，不会无限循环）
     * 结果B，key本应落在自己节点，但之前已经没找到，说明缓存里确实没有，调用fromlocal从本地获取缓存数据添加进去
   
-注：Apiserver和httpgetter的主要区别只是对外界开放与否。httpgeter->http.Get(Go库)->serveHTTP->Group.get殊途同归（具体可参加代码及注释）。单独写出来，这样对用户暴露的URL可以很方便的修改。
+注：Apiserver和httpgetter的主要区别只是对外界开放与否。httpgetter->http.Get(Go库)->serveHTTP->Group.get殊途同归（具体可参加代码及注释）。单独写出来，这样对用户暴露的URL可以很方便的修改。
 
 * onlySendOnce：当一个key正在被查询时，查询相同key的请求全部被挂起，直接等待结果返回。
 
 ## 部分运行测试结果
-测试若存在缓存则返回，不存在则从本地获取。下图第二次请求直接返回find in cache。  
+* 测试若存在缓存则返回，不存在则从本地获取。下图第二次请求直接返回find in cache。  
 ![http](readmeResources/basic_test.PNG)
 
-测试一致性hash加入节点。  
+* 测试一致性hash加入节点。  
 ![hashring](readmeResources/hashring_test.PNG)
 
-run.sh模拟分布式节点，使用Http发送请求。  
-并测试onlySendOnce。数个相同key的请求同时发出，若不在cache中，只会同时本地获取一次，其它请求直接等待结果。  
+* run.sh模拟多个节点，使用Http发送请求。  
+  并测试onlySendOnce。数个相同key的请求同时发出，若不在cache中，只会同时本地获取一次，其它请求直接等待结果。  
 ```
 cache is running at http://localhost:8000
 cache is running at http://localhost:8002
