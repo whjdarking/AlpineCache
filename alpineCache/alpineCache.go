@@ -73,7 +73,7 @@ func (g *Group) Get(key string) (ByteView, error) {
 	}
 
 	if v, ok := g.mainCache.get(key); ok {
-		log.Println("find a hit")
+		log.Println("successfully find in cache")
 		return v, nil
 	}
 

@@ -1,6 +1,7 @@
 package hash
 
 import (
+	"fmt"
 	"strconv"
 	"testing"
 )
@@ -14,6 +15,7 @@ func TestHashing(t *testing.T) {
 
 	// 手动算出我们应该得到如后面的节点：2, 4, 6, 12, 14, 16, 22, 24, 26
 	//（这里比如4会变成4,14,24这样）
+	fmt.Println("nodes: 2, 4, 6 with replicas of 3")
 	hash.Add("6", "4", "2")
 
 	//手动算出2 11 23 27应该归属哪个真实节点
@@ -29,6 +31,7 @@ func TestHashing(t *testing.T) {
 			t.Errorf("Asking for %s, should have yielded %s", k, v)
 		}
 	}
+	fmt.Println("2 in node2, 11 in node2, 23 in node4, 27 in node2")
 
 	//再添加一个真实节点
 	hash.Add("8")
@@ -40,5 +43,7 @@ func TestHashing(t *testing.T) {
 			t.Errorf("Asking for %s, should have yielded %s", k, v)
 		}
 	}
+	fmt.Println("nodes: 8 with replicas of 3")
+	fmt.Println("27 changed to node8")
 
 }

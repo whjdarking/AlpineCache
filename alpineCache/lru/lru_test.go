@@ -4,6 +4,7 @@ import (
 	"reflect"
 	"testing"
 )
+
 //为了测试，我们假设缓存Value是一个string
 type String string
 
@@ -39,7 +40,7 @@ func TestGet(t *testing.T) {
 func TestRemoveOldest(t *testing.T) {
 	k1, k2, k3 := "key1", "key2", "key3"
 	v1, v2, v3 := "value1", "value2", "value3"
-	cap := len(k1 + k2 + v1 + v2)
+	cap := len(k1 + k2 + v1 + v2) //设置了maxBytes
 	lru := New(int64(cap), nil)
 	lru.Add(k1, String(v1))
 	lru.Add(k2, String(v2))

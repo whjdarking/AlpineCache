@@ -18,7 +18,7 @@ func createGroup() *alpineCache.Group {
 	//传入getterfunc，这里作为测试，就是从本地（也就是上面写的db）读取key返回value
 	return alpineCache.NewGroup("scores", 2<<10, alpineCache.GetterFunc(
 		func(key string) ([]byte, error) {
-			log.Println("[SlowDB] search key", key)
+			log.Println("[Simulate Database] Get from database with key of", key)
 			if v, ok := db[key]; ok {
 				return []byte(v), nil
 			}
@@ -26,11 +26,10 @@ func createGroup() *alpineCache.Group {
 		}))
 }
 
-
-//apiserver的路径等可以单独修改，对外暴露。这是apiserver发起group.Get请求
-//apiserver和cache的区别是apiserver的group没有设定group.RegisterPeers，是无法正常工作的
-//但当cacheServer设置后，同一个group的apiserver就可以工作了。
-//换句话说这里是为了方便测试，一组group中，一定要有一个api为true，才能正常使用api功能。如果不启用api，直接向cacheServer发送符合cacheServer的URL也行。
+//apiserver的路径等可以单独修改，对外暴露。
+//apiserver和cache的区别是apiserver的group没有设定group.RegisterPeers，是无法正常工作的。
+//但当startCacheServer设置后，使用同一个group传入的startAPIServer就可以工作了。
+//换句话说一组group中，一定要有一个api为true，才能正常使用api功能。如果不启用api，直接向cacheServer发送符合cacheServer的ServeHTTP规则的请求也行。
 func startAPIServer(apiAddr string, group *alpineCache.Group) {
 	http.Handle("/api", http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
@@ -68,11 +67,11 @@ func main() {
 	flag.BoolVar(&api, "api", false, "Start a api server?")
 	flag.Parse()
 
-	apiAddr := "http://localhost:9999"
+	apiAddr := "http://localhost:9000"
 	addrMap := map[int]string{
+		8000: "http://localhost:8000",
 		8001: "http://localhost:8001",
 		8002: "http://localhost:8002",
-		8003: "http://localhost:8003",
 	}
 
 	var addrs []string
@@ -86,7 +85,6 @@ func main() {
 		go startAPIServer(apiAddr, exampleGroup)
 	}
 	startCacheServer(addrMap[port], addrs, exampleGroup)
-
 
 	//原测试代码，现存在creategroup里
 	//alpineCache.NewGroup("scores", 2<<10, alpineCache.GetterFunc(

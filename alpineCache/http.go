@@ -15,10 +15,10 @@ const defaultBasePath = "/_cache/"
 const defaultReplicas = 50
 
 type HTTPPool struct {
-	self string  //自己的地址
-	basePath string  //设定后缀path，表示在调用本缓存api
-	mu sync.Mutex
-	peers *hash.Map                    //用之前写的hash来选择节点
+	self        string //自己的地址
+	basePath    string //设定后缀path，表示在调用本缓存api
+	mu          sync.Mutex
+	peers       *hash.Map              //用之前写的hash来选择节点
 	httpGetters map[string]*httpGetter //下面实现的客户端，每一个getter对应一个节点
 }
 
@@ -32,6 +32,7 @@ func NewHTTPPool(self string) *HTTPPool {
 func (p *HTTPPool) Log(format string, v ...interface{}) {
 	log.Printf("[Server %s] %s", p.self, fmt.Sprintf(format, v...))
 }
+
 //核心的ServeHTTP方法
 func (p *HTTPPool) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if !strings.HasPrefix(r.URL.Path, p.basePath) {
@@ -78,6 +79,7 @@ func (p *HTTPPool) Set(peers ...string) {
 		p.httpGetters[peer] = &httpGetter{baseURL: peer + p.basePath}
 	}
 }
+
 //继续使得HTTPPool实现PeerPicker接口
 //根据key返回对应的getter
 func (p *HTTPPool) PickPeer(key string) (PeerGetter, bool) {
@@ -85,20 +87,21 @@ func (p *HTTPPool) PickPeer(key string) (PeerGetter, bool) {
 	defer p.mu.Unlock()
 	//下面的get是自己写的一致性hash的get，返回一个真实节点的名字string
 	if peer := p.peers.Get(key); peer != "" && peer != p.self {
-		p.Log("Pick peer %s", peer)
+		p.Log("Pick node(peer) from %s", peer)
 		//根据真实节点的string名，获得对应的getter
 		return p.httpGetters[peer], true
 	}
 	return nil, false
 }
-var _ PeerPicker = (*HTTPPool)(nil)  //接口断言
 
+var _ PeerPicker = (*HTTPPool)(nil) //接口断言
 
 //每一个节点都应该有一个getter，通过这里面的baseURL区分
 //存在httppool里名叫getters的map里面
 type httpGetter struct {
 	baseURL string
 }
+
 //实现peers.go里的PeerGetter接口
 //这里相当于是客户端，发送get请求给另一个节点。注意这里的httpGetter已经是对应节点的getter了。
 func (h *httpGetter) Get(group string, key string) ([]byte, error) {
@@ -126,4 +129,5 @@ func (h *httpGetter) Get(group string, key string) ([]byte, error) {
 
 	return bytes, nil
 }
+
 var _ PeerGetter = (*httpGetter)(nil) //接口断言
