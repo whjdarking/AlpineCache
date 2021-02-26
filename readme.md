@@ -1,5 +1,6 @@
 # AlpineCache
-Go语言编写的分布式缓存。支持缓存的基本功能，包括查询，本地获取，缓存淘汰，并发查询等。  
+Go语言编写的分布式缓存。模仿Memcached作者的 [groupcache](https://www.github.com/golang/groupcache)
+。支持缓存的基本功能，包括查询，本地获取，缓存淘汰，并发查询等。  
 通过Go语言test机制，进行单元测试，模拟使用情况。
 
 ## 关键词
